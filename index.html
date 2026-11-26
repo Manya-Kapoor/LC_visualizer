@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore Two Sum one step at a time with interactive array diagrams and synchronized Python code.">
+  <meta name="color-scheme" content="light dark">
+  <title>Two Sum · Tracepad</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230e7767'/%3E%3Cpath d='m6 14 10-6 10 6-10 6zm0 5 10 6 10-6' fill='none' stroke='white' stroke-width='2.5' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <script src="solutions.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html" aria-label="Tracepad home"><span class="brand-mark" data-icon="brand"></span>Tracepad</a>
+      <span class="brand-divider"></span><span class="workspace-name">Algorithm workspace</span>
+      <div class="header-actions">
+        <a class="source-link" href="https://leetcode.com/problems/two-sum/description/" target="_blank" rel="noopener noreferrer">View on LeetCode <span data-icon="external"></span></a>
+        <button type="button" class="theme-toggle icon-btn" id="theme" aria-label="Switch to dark theme" title="Switch to dark theme"><span data-icon="moon"></span></button>
+      </div>
+    </div>
+  </header>
+  <main>
+    <section class="hero" aria-labelledby="problem-title">
+      <div class="hero-text">
+        <div class="problem-meta"><span class="problem-id">PROBLEM 001</span><span class="easy"><i></i>Easy</span></div>
+        <h1 id="problem-title">Two Sum</h1>
+        <p>Find two distinct indices in an array whose values add up to a given target.</p>
+        <div class="tags"><span>Array</span><span>Hash table</span></div>
+      </div>
+      <div class="hero-art" aria-hidden="true"><canvas id="hero-diagram" width="510" height="200"></canvas></div>
+    </section>
+
+    <div class="approach-bar">
+      <div class="approaches"><span class="field-label" id="approach-label">Approach</span><div class="switcher" role="group" aria-labelledby="approach-label" id="approaches"></div></div>
+      <button type="button" class="secondary-btn edit-btn" id="edit-input"><span data-icon="sliders"></span>Edit input</button>
+    </div>
+
+    <div class="workspace">
+      <section class="panel visual-panel" aria-labelledby="viz-title">
+        <div class="panel-heading"><h2 id="viz-title"><span class="section-icon" data-icon="array"></span>Visualization</h2><span class="step-counter" id="step-counter"></span></div>
+        <div class="stage">
+          <div class="array-caption"><span class="diagram-label" id="array-label">INPUT ARRAY</span><span class="target-chip" id="target-chip"></span></div>
+          <div class="array-row" id="array-row" aria-label="Array values and indices"></div>
+          <div class="memory"><div class="memory-caption"><span class="diagram-label" id="memory-label"></span><span class="memory-hint" id="memory-hint"></span></div><div id="memory-contents"></div></div>
+        </div>
+        <div class="step-note" aria-live="polite" aria-atomic="true"><span id="note-icon" class="note-icon" data-icon="scan"></span><div><h3 id="step-title"></h3><p id="step-description"></p></div></div>
+        <div class="mobile-line" aria-label="Current code line"><span id="mobile-line-number"></span><code id="mobile-code"></code></div>
+        <div class="transport">
+          <label class="sr-only" for="timeline">Execution step</label><input type="range" id="timeline" min="1" value="1" max="1">
+          <div class="controls">
+            <button class="play-btn" type="button" id="play"></button>
+            <button class="control-icon" type="button" id="back" aria-label="Previous step" title="Previous step (left arrow)"><span data-icon="previous"></span></button>
+            <button class="control-icon" type="button" id="next" aria-label="Next step" title="Next step (right arrow)"><span data-icon="next"></span></button>
+            <span class="control-divider"></span>
+            <button class="control-icon" type="button" id="reset" aria-label="Reset to first step" title="Reset to first step"><span data-icon="reset"></span></button>
+            <label class="speed"><span data-icon="speed"></span><select id="speed" aria-label="Playback speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select><span data-icon="chevron"></span></label>
+          </div>
+        </div>
+      </section>
+      <section class="panel code-panel" aria-labelledby="code-title">
+        <div class="panel-heading"><h2 id="code-title"><span class="section-icon" data-icon="code"></span>Solution code</h2><span class="language">Python</span></div>
+        <div class="source-code" id="source-code" tabindex="0" role="region" aria-label="Python solution with current line highlighted"></div>
+        <div class="complexities"><div><span data-icon="clock"></span><span>Time</span><strong id="time-cost"></strong></div><div><span data-icon="layers"></span><span>Space</span><strong id="space-cost"></strong></div></div>
+        <div class="approach-note"><h3><span data-icon="bulb"></span>How it works</h3><p id="approach-description"></p></div>
+      </section>
+    </div>
+    <footer><span class="footer-mark" data-icon="brand"></span><span>Tracepad</span><i></i><span>Two Sum workspace</span></footer>
+  </main>
+  <dialog id="input-dialog" aria-labelledby="input-title">
+    <form id="input-form">
+      <div class="dialog-head"><h2 id="input-title">Edit input</h2><button class="icon-btn" type="button" id="close-dialog" aria-label="Close input editor"><span data-icon="close"></span></button></div>
+      <p class="dialog-intro">Try an example or trace your own array with exactly one matching pair.</p>
+      <label class="field-label" for="preset">Example</label><select class="text-field" id="preset"><option value="custom">Custom input</option><option value="classic">Classic pair</option><option value="later">Later match</option><option value="duplicates">Duplicate values</option><option value="negatives">Negative values</option></select>
+      <label class="field-label" for="nums-input">Array</label><input class="text-field mono" id="nums-input" required aria-describedby="array-help input-error" autocomplete="off" spellcheck="false"><p class="input-hint" id="array-help">Enter 2–12 integers, separated by commas.</p>
+      <label class="field-label" for="target-input">Target</label><input class="text-field mono" id="target-input" required aria-describedby="input-error" autocomplete="off">
+      <p id="input-error" role="alert" hidden></p>
+      <div class="dialog-actions"><button class="secondary-btn" type="button" id="cancel-input">Cancel</button><button class="play-btn" type="submit">Apply input</button></div>
+    </form>
+  </dialog>
+</body>
+</html>
