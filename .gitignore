@@ -1,0 +1,17 @@
+# Local environment and secret files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+secrets.*
+
+# Common local tooling artifacts
+.DS_Store
+Thumbs.db
+node_modules/
+__pycache__/
+*.py[cod]
