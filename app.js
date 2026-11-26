@@ -58,25 +58,34 @@ let position = 0;
 let timer = null;
 
 // Only fixed, authored code lines pass through the tokenizer.
-function highlightPython(line) {
+function highlightCode(line) {
   const tokens = line.match(/[A-Za-z_]\w*|\d+|./g) || [];
   return tokens.map(token => {
-    const style = /^(def|for|in|if|return|while|else|and|is|not|None)$/.test(token) ? "keyword"
-      : /^(enumerate|len|range|sorted|get)$/.test(token) ? "builtin"
-      : token === "two_sum" ? "fn" : /^\d+$/.test(token) ? "number" : "";
+    const style = /^(def|for|in|if|return|while|else|and|is|not|None|public|int|new|auto)$/.test(token) ? "keyword"
+      : /^(enumerate|len|range|sorted|get|Map|Integer|HashMap|Arrays|Comparator|vector|pair|unordered_map|sort)$/.test(token) ? "builtin"
+      : /^(two_sum|twoSum)$/.test(token) ? "fn" : /^\d+$/.test(token) ? "number" : "";
     const safe = token === "<" ? "&lt;" : token === ">" ? "&gt;" : token === "&" ? "&amp;" : token;
     return style ? `<span class="token-${style}">${safe}</span>` : safe;
   }).join("");
 }
+function renderCode() {
+  const language = $("language");
+  const source = $("source-code");
+  source.setAttribute("aria-label", language.selectedOptions[0].text + " solution with current line highlighted");
+  source.innerHTML = `<div class="code-list">${codeListings[approach][language.value].lines.map((line, i) =>
+    `<div class="code-line"><span class="line-num" aria-hidden="true">${i + 1}</span><code>${highlightCode(line)}</code></div>`).join("")}</div>`;
+  source.scrollTop = 0;
+}
 function renderApproach() {
   stop();
-  frames = solutions[approach].trace(input.nums, input.target);
-  position = 0;
   const solution = solutions[approach];
-  $("source-code").innerHTML = `<div class="code-list">${solution.code.map((line, i) =>
-    `<div class="code-line"><span class="line-num" aria-hidden="true">${i + 1}</span><code>${highlightPython(line)}</code></div>`).join("")}</div>`;
+  frames = solution.trace(input.nums, input.target);
+  position = 0;
+  renderCode();
   $("time-cost").textContent = solution.time;
   $("space-cost").textContent = solution.space;
+  $("time-reason").textContent = solution.timeReason;
+  $("space-reason").textContent = solution.spaceReason;
   $("approach-description").textContent = solution.description;
   $("approaches").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.id === approach)));
   $("target-chip").innerHTML = `target = <b>${input.target}</b>`;
@@ -107,15 +116,23 @@ function renderFrame() {
       : '<span class="memory-empty">Awaiting pointers</span>';
     if (step.total !== undefined) $("memory-contents").insertAdjacentHTML("beforeend", `<span class="memory-entry hot">sum = ${step.total}</span>`);
   }
-  $("source-code").querySelectorAll(".code-line").forEach((el, i) => {
-    const active = i + 1 === step.line;
-    el.classList.toggle("current", active);
-    if (active) el.setAttribute("aria-current", "step");
-    else el.removeAttribute("aria-current");
-  });
+  const source = $("source-code");
+  const listing = codeListings[approach][$("language").value];
+  const line = listing.lineFor[step.action];
+  const previousLine = source.querySelector(".current");
+  previousLine?.classList.remove("current");
+  previousLine?.removeAttribute("aria-current");
+  const activeLine = source.firstElementChild.children[line - 1];
+  activeLine.classList.add("current");
+  activeLine.setAttribute("aria-current", "step");
+  // Scroll just the code pane so playback never moves the page or its controls.
+  const lineTop = activeLine.offsetTop;
+  const lineBottom = lineTop + activeLine.offsetHeight;
+  if (lineTop < source.scrollTop) source.scrollTop = lineTop;
+  else if (lineBottom > source.scrollTop + source.clientHeight) source.scrollTop = lineBottom - source.clientHeight;
   $("step-title").textContent = step.title;
-  $("mobile-line-number").textContent = "Line " + step.line;
-  $("mobile-code").textContent = solutions[approach].code[step.line - 1].trim();
+  $("mobile-line-number").textContent = "Line " + line;
+  $("mobile-code").textContent = listing.lines[line - 1].trim();
   $("step-description").textContent = step.detail;
   $("note-icon").innerHTML = icon(step.result ? "check" : "scan");
   $("step-counter").textContent = `Step ${position + 1} / ${frames.length}`;
@@ -123,7 +140,7 @@ function renderFrame() {
   timeline.max = frames.length;
   timeline.value = position + 1;
   timeline.style.setProperty("--progress", `${100 * position / (frames.length - 1)}%`);
-  timeline.setAttribute("aria-valuetext", `Step ${position + 1} of ${frames.length}. ${step.title}. Code line ${step.line}.`);
+  timeline.setAttribute("aria-valuetext", `Step ${position + 1} of ${frames.length}. ${step.title}. Code line ${line}.`);
   $("back").disabled = position === 0;
   $("next").disabled = position === frames.length - 1;
   renderPlay();
@@ -168,6 +185,10 @@ for (const [id, solution] of Object.entries(solutions)) {
   $("approaches").append(button);
 }
 $("play").onclick = togglePlayback;
+$("language").onchange = () => {
+  renderCode();
+  renderFrame();
+};
 $("back").onclick = () => seek(position - 1);
 $("next").onclick = () => seek(position + 1);
 $("reset").onclick = () => seek(0);
