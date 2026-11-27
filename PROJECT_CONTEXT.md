@@ -46,4 +46,8 @@ Two Sum verification covered all 16 reference listings against each of its four 
 
 Run `node --test` for the full practice suite. All 95 tests passed. Rain Water coverage includes all 16 reference listings on the four presets and edge terrains, custom input, hint line numbers, wrong return types, input mutation, runtime errors, and runaway loops. Browser checks verified first-step and corrective hints, 1/4 for a fixed zero return, 4/4 for the Java solution, 5/5 including custom heights, draft recovery after reload, approach and language switching, and returning to Two Sum.
 
-The user will choose the next milestone. The [idea checklist](IDEAS.md) tracks future browsing and tagging features.
+## Public hosting
+
+Version 1 is public at [Code Astra](https://code-astra-karmanya.manya-kapoor-9436.chatgpt.site). Sites project `appgprj_6b09741781648191ad892d0e085237c6` serves the app from GitHub revision `6a388a0`. For updates, reuse that Sites project and stage `index.html` plus the 12 scripts and one stylesheet it references in `dist/`. Publishing is separate from a GitHub push. The 95 local tests passed. An anonymous HTTPS request returned the Code Astra homepage and all 13 linked assets matched the project.
+
+The public custom domain is [karmanya.xyz](https://karmanya.xyz/), managed at gen.xyz using its default TopDNS nameservers. Sites custom domain `appgdom_6b0974a3d4cc8191b5357c2eb69a0d54` and its HTTPS certificate are active. On 28 Nov 2026, anonymous HTTPS checks returned HTTP 200 on both walkthrough URLs, all 13 linked assets matched the project, and a browser rendered both Two Sum and Trapping Rain Water. The [idea checklist](IDEAS.md) tracks future browsing and tagging features.
