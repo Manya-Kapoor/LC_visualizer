@@ -165,6 +165,20 @@ h3 { font-size: 1rem; font-weight: 650; line-height: 1.45; letter-spacing: -.022
 .speed select { appearance: none; padding: 6px 17px 6px 27px; margin: 0 -18px 0 -27px; position: relative; z-index: 1; background: transparent; color: var(--ink); border: 0; font: .855rem/1.4 var(--mono); }
 select option { background: var(--surface); color: var(--ink); }
 .source-code { position: relative; background: #142622; color: #e3eee8; padding: 14px 0; max-height: 20rem; overflow: auto; scrollbar-width: thin; }
+.code-panel [hidden], .practice-active .mobile-line, .practice-active .code-panel .complexities, .practice-active .code-panel .approach-note { display: none; }
+#code-mode-picker .language { background: var(--surface); font: inherit; letter-spacing: inherit; padding-left: 7px; }
+.practice-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 16px; background: var(--soft); border-bottom: 1px solid var(--line); }
+.practice-toolbar label { color: var(--muted); font-size: .875rem; font-weight: 600; }
+.hint-button { padding: 5px 10px; color: var(--green-strong); border-color: var(--line); }
+#practice-editor { display: block; width: 100%; min-height: 14rem; height: 17rem; resize: vertical; padding: 16px; border: 0; border-radius: 0; tab-size: 4; font: .9rem/1.7 var(--mono); background: #142622; color: #e3eee8; caret-color: #b6efc7; }
+#practice-editor:focus-visible { outline-offset: -3px; }
+#practice-editor::placeholder { color: #a8bdb1; }
+#draft-status { padding: 9px 16px; font-size: .8rem; color: var(--muted); }
+#hint-feedback { border-top: 1px solid var(--line); background: var(--note); padding: 14px 16px; }
+#hint-feedback h3 { color: var(--green-strong); }
+#hint-line:not([hidden]) { display: block; margin-block: 6px; font: .83rem/1.5 var(--mono); overflow-wrap: anywhere; color: var(--ink); }
+#hint-feedback[data-kind="fix"] h3 { color: var(--pointer); }
+#hint-feedback p { margin-top: 4px; font-size: .95rem; line-height: 1.55; }
 .code-list { font: .875rem/1.8 var(--mono); font-variant-ligatures: none; }
 .code-line { display: flex; border-left: 3px solid transparent; padding-right: 18px; }
 .code-line.current { background: #264b3b; border-left-color: #90dea8; }

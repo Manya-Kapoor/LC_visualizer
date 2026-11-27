@@ -11,13 +11,13 @@
 
 - [x] Add a pseudocode option alongside Java, C++, and Python.
 
-### Practice Code
+### Practice Code for Two Sum
 
-- [ ] Add a dropdown with “Solution Code” and “Practice Code”. Selecting “Practice Code” opens an editor where I can write my own solution.
-- [ ] Add a small “Get a hint” button that reads my current code when I click it.
-  - [ ] If I’m stuck at the start, suggest the first coding step.
-  - [ ] If my code is on track, confirm that and suggest the next coding step.
-  - [ ] If a step is incorrect, point out what I need to fix and why before suggesting the next step.
+- [x] Add a dropdown with “Solution Code” and “Practice Code”. Selecting “Practice Code” opens an editor where I can write my own solution.
+- [x] Add a small “Hint” button that reads my current code when I click it.
+  - [x] If I’m stuck at the start, suggest the first coding step.
+  - [x] If my code is on track, confirm that and suggest the next coding step.
+  - [x] If a step is incorrect, point out what I need to fix and why before suggesting the next step.
 
 ## Chat continuity
 

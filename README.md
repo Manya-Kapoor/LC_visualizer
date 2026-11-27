@@ -14,6 +14,10 @@ Play or pause the trace, move one step at a time, or scrub the timeline. With fo
 
 Two Sum accepts 2–12 integers with exactly one matching pair. Sorting retains original indices, and duplicate values occupy distinct tiles.
 
+In Two Sum, open **Solution Code** and choose **Practice Code** to write your own solution. Click **Hint** for a first step, feedback on your progress, or a correction with the relevant line and the reason to change it. Hints use local pattern checks for the four walkthrough approaches. Each approach and language has its own draft, saved in this browser when local storage is available. Switch back to **Solution Code** to see the highlighted walkthrough again.
+
+To check the practice hints during development, run `node --test tests/two-sum-practice.test.cjs`.
+
 Trapping Rain Water accepts 1–16 whole-number heights from 0 to 100,000. Compare two pointers, prefix/suffix maxima, a monotonic stack, and brute force. The chart shows terrain heights, water depth per column, and total volume at each step. The **Wide basin** example traps 9 units and **Several pools** traps 6.
 
 Two Sum traces and listings live in `solutions.js` and `listings.js`. The corresponding rainwater files are `rainwater.js` and `rainwater-listings.js`. Both problems use the same action markers, code panel, and playback controls. The terrain chart and input validation are in `rainwater-view.js`. Layout and theme tokens are in `styles.css`.
