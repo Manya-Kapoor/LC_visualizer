@@ -43,7 +43,14 @@ const codeListings = {
         need = target - num @complement
         if need in seen: @lookup
             return [seen[need], i] @found
-        seen[num] = i @store`)
+        seen[num] = i @store`),
+    pseudocode: listing(`seen ← empty map
+
+FOR each index i from left to right @visit
+    need ← target − nums[i] @complement
+    IF seen contains need @lookup
+        RETURN [seen[need], i] @found
+    seen[nums[i]] ← i @store`)
   },
   brute: {
     java: listing(`public int[] twoSum(int[] nums, int target) {
@@ -75,7 +82,13 @@ const codeListings = {
         for j in range(i + 1, len(nums)): @second
             total = nums[i] + nums[j] @sum
             if total == target: @compare
-                return [i, j] @found`)
+                return [i, j] @found`),
+    pseudocode: listing(`n ← length of nums
+FOR i FROM 0 TO n − 2 @first
+    FOR j FROM i + 1 TO n − 1 @second
+        total ← nums[i] + nums[j] @sum
+        IF total = target @compare
+            RETURN [i, j] @found`)
   },
   twoPass: {
     java: listing(`public int[] twoSum(int[] nums, int target) {
@@ -117,7 +130,16 @@ const codeListings = {
         need = target - num @complement
         j = index.get(need) @lookup
         if j is not None and j != i: @distinct
-            return [i, j] @found`)
+            return [i, j] @found`),
+    pseudocode: listing(`index ← empty map
+FOR each index i from left to right @build
+    index[nums[i]] ← i @store
+
+FOR each index i from left to right @visit
+    need ← target − nums[i] @complement
+    j ← index[need] if present, otherwise NONE @lookup
+    IF j ≠ NONE AND j ≠ i @distinct
+        RETURN [i, j] @found`)
   },
   pointers: {
     java: listing(`public int[] twoSum(int[] nums, int target) {
@@ -173,6 +195,17 @@ const codeListings = {
         if total < target: @direction
             l += 1 @left
         else:
-            r -= 1 @right`)
+            r -= 1 @right`),
+    pseudocode: listing(`pairs ← each value paired with its original index
+SORT pairs by value, then by original index @sort
+l ← 0, r ← length of pairs − 1 @place
+WHILE l < r @bounds
+    total ← pairs[l].value + pairs[r].value @sum
+    IF total = target @compare
+        RETURN [pairs[l].index, pairs[r].index] @found
+    IF total < target @direction
+        l ← l + 1 @left
+    ELSE
+        r ← r − 1 @right`)
   }
 };

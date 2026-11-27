@@ -36,13 +36,23 @@ function setTheme(theme) {
   $("theme").title = action;
   $("theme").innerHTML = icon(theme === "dark" ? "sun" : "moon");
 }
+const themeKey = "code-astra-theme";
 let savedTheme;
-try { savedTheme = localStorage.getItem("tracepad-theme"); } catch { /* Storage can be disabled for local files. */ }
+try {
+  savedTheme = localStorage.getItem(themeKey);
+  // Bring existing browser preferences across the project rename.
+  const legacyKey = "tracepad-theme";
+  if (savedTheme === null) {
+    savedTheme = localStorage.getItem(legacyKey);
+    if (savedTheme === "dark" || savedTheme === "light") localStorage.setItem(themeKey, savedTheme);
+  }
+  localStorage.removeItem(legacyKey);
+} catch { /* Storage can be disabled for local files. */ }
 setTheme(savedTheme === "dark" || savedTheme === "light" ? savedTheme : matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
 $("theme").onclick = () => {
   const theme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
   setTheme(theme);
-  try { localStorage.setItem("tracepad-theme", theme); } catch { /* The toggle also works without storage. */ }
+  try { localStorage.setItem(themeKey, theme); } catch { /* The toggle also works without storage. */ }
 };
 
 const examples = {
@@ -61,7 +71,7 @@ let timer = null;
 function highlightCode(line) {
   const tokens = line.match(/[A-Za-z_]\w*|\d+|./g) || [];
   return tokens.map(token => {
-    const style = /^(def|for|in|if|return|while|else|and|is|not|None|public|int|new|auto)$/.test(token) ? "keyword"
+    const style = /^(def|for|in|if|return|while|else|and|is|not|None|public|int|new|auto|FOR|FROM|TO|IF|RETURN|WHILE|ELSE|AND|NONE|SORT)$/.test(token) ? "keyword"
       : /^(enumerate|len|range|sorted|get|Map|Integer|HashMap|Arrays|Comparator|vector|pair|unordered_map|sort)$/.test(token) ? "builtin"
       : /^(two_sum|twoSum)$/.test(token) ? "fn" : /^\d+$/.test(token) ? "number" : "";
     const safe = token === "<" ? "&lt;" : token === ">" ? "&gt;" : token === "&" ? "&amp;" : token;
