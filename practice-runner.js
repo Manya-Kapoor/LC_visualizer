@@ -6,9 +6,10 @@ function practiceCases(examples, current) {
   return cases;
 }
 
-function judgeTwoSum(source, language, cases) {
+function judgePractice(source, language, cases, problem = "two-sum") {
+  const rain = problem === "trapping-rain-water";
   let program;
-  try { program = parsePractice(source, language); }
+  try { program = parsePractice(source, language, problem); }
   catch (err) { return {error:err.message}; }
 
   function describe(value) {
@@ -19,7 +20,7 @@ function judgeTwoSum(source, language, cases) {
       if (value.length > 8) cells.push("…");
       return `[${cells.join(", ")}]`;
     }
-    return typeof value === "object" ? "A non-index result" : String(value);
+    return typeof value === "object" ? "An object" : String(value);
   }
   function expectedPair(nums, target) {
     for (let i = 0; i < nums.length; i++) {
@@ -27,13 +28,23 @@ function judgeTwoSum(source, language, cases) {
     }
     throw new Error("This input has no valid pair.");
   }
+  // Compute the waterline at each column independently of the student's algorithm.
+  function waterVolume(heights) {
+    return heights.reduce((total, height, i) => {
+      const leftWall = Math.max(...heights.slice(0, i + 1));
+      const rightWall = Math.max(...heights.slice(i));
+      return total + Math.min(leftWall, rightWall) - height;
+    }, 0);
+  }
   const results = cases.map(({name,nums,target}) => {
-    const result = {name,nums,target,expected:expectedPair(nums,target)};
+    const expected = rain ? waterVolume(nums) : expectedPair(nums,target);
+    const result = {name,nums,target,expected};
     try {
       const actual = executePractice(program,nums,target);
-      const pair = Array.isArray(actual) && actual.length === 2 &&
-        actual.every(i => Number.isInteger(i) && i >= 0 && i < nums.length);
-      const passed = pair && actual[0] !== actual[1] && nums[actual[0]] + nums[actual[1]] === target;
+      const passed = rain ? Number.isInteger(actual) && actual === expected :
+        Array.isArray(actual) && actual.length === 2 &&
+        actual.every(i => Number.isInteger(i) && i >= 0 && i < nums.length) &&
+        actual[0] !== actual[1] && nums[actual[0]] + nums[actual[1]] === target;
       return {...result, status:passed ? "Passed" : "Wrong answer", actual:describe(actual)};
     } catch (err) {
       return {...result, status:"Runtime error", error:err.message};
@@ -80,8 +91,9 @@ function createPracticeRunControls(editor) {
         heading.append(label,flag);
         details.open = row.status !== "Passed";
         const inputs = document.createElement("p"), answer = document.createElement("p");
-        inputs.textContent = `nums = [${row.nums.join(", ")}] · target = ${row.target}`;
-        answer.textContent = row.error ? row.error : `Returned ${row.actual} · Expected [${row.expected.join(", ")}]`;
+        inputs.textContent = isRain ? `height = [${row.nums.join(", ")}]` : `nums = [${row.nums.join(", ")}] · target = ${row.target}`;
+        const expected = isRain ? units(row.expected) : `[${row.expected.join(", ")}]`;
+        answer.textContent = row.error || `Returned ${row.actual} · Expected ${expected}`;
         details.append(heading,inputs,answer);
         item.append(details);
         list.append(item);
@@ -100,8 +112,8 @@ function createPracticeRunControls(editor) {
     $("run-status").textContent = "Running examples…";
     let url;
     try {
-      const script = [parsePractice,executePractice,judgeTwoSum].map(fn => fn.toString()).join("\n") +
-        "\nself.onmessage = ({data}) => self.postMessage(judgeTwoSum(data.source, data.language, data.cases));";
+      const script = [parsePractice,executePractice,judgePractice].map(fn => fn.toString()).join("\n") +
+        "\nself.onmessage = ({data}) => self.postMessage(judgePractice(data.source, data.language, data.cases, data.problem));";
       url = URL.createObjectURL(new Blob([script], {type:"text/javascript"}));
       const job = new Worker(url);
       worker = job;
@@ -110,7 +122,7 @@ function createPracticeRunControls(editor) {
       timeout = setTimeout(() => {
         if (worker === job) display({error:"Execution timed out. Check your loop bounds and run again."});
       }, 5000);
-      job.postMessage({source:editor.value, language:$("language").value, cases:practiceCases(twoSumExamples,input)});
+      job.postMessage({source:editor.value, language:$("language").value, cases:practiceCases(examples,input), problem:problemSlug});
     } catch (err) {
       display({error:`Couldn’t start the browser runner. ${err.message}`});
     } finally {

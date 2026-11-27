@@ -75,7 +75,7 @@ let approach = isRain ? "pointers" : "onePass";
 let frames = [];
 let position = 0;
 let timer = null;
-const refreshPractice = isRain ? null : createTwoSumPractice();
+const refreshPractice = createPracticeEditor();
 
 // Only fixed, authored code lines pass through the tokenizer.
 function highlightCode(line) {
@@ -95,7 +95,7 @@ function renderCode() {
   source.innerHTML = `<div class="code-list">${listings[approach][language.value].lines.map((line, i) =>
     `<div class="code-line"><span class="line-num" aria-hidden="true">${i + 1}</span><code>${highlightCode(line)}</code></div>`).join("")}</div>`;
   source.scrollTop = 0;
-  refreshPractice?.();
+  refreshPractice();
 }
 function renderApproach() {
   stop();

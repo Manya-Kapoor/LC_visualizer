@@ -99,6 +99,11 @@ function executePractice(program, nums, target) {
       case ">": return compare(a,b) > 0;
       case ">=": return compare(a,b) >= 0;
     }
+    if (python && op === "*" && (Array.isArray(a) || Array.isArray(b))) {
+      const items = Array.isArray(a) ? a : b;
+      const count = integer(items === a ? b : a);
+      return Array.from({length:size(items.length * Math.max(0, count))}, (_, i) => items[i % items.length]);
+    }
     integer(a); integer(b);
     if (op === "+") return integer(a + b);
     if (op === "-") return integer(a - b);
@@ -112,6 +117,7 @@ function executePractice(program, nums, target) {
 
   function construct(type, args) {
     if (["map","unordered_map","HashMap","Map"].includes(type)) return new Map();
+    if (["Deque","ArrayDeque","Stack","stack"].includes(type)) return [];
     if (["vector","List","ArrayList","pair"].includes(type)) return Array(size(args[0] ?? 0)).fill(args[1] ?? 0);
     if (["int","Integer","long","size_t","bool","auto"].includes(type)) return args[0] ?? 0;
     fail(`Unsupported constructor '${type}'.`);
@@ -132,6 +138,7 @@ function executePractice(program, nums, target) {
     const [a,b,c] = args;
     switch (id) {
       case "len": return a instanceof Map ? a.size : array(a).length;
+      case "sum": return array(a).reduce((sum, n) => integer(sum + integer(n)), integer(b ?? 0));
       case "enumerate": size(array(a).length); return a.map((v,i) => [i + (b ?? 0), v]);
       case "range": {
         const start = b == null ? 0 : integer(a), end = integer(b ?? a), step = integer(c ?? 1);
@@ -171,7 +178,16 @@ function executePractice(program, nums, target) {
         case "size": return base.length;
         case "at": case "get": return readAt(base,a);
         case "begin": case "end": return {edge:id,list:base};
-        case "append": case "push_back": case "emplace_back": case "add":
+        case "empty": case "isEmpty": return base.length === 0;
+        case "back": case "top": case "peek":
+          if (!base.length) fail("The stack is empty. Check that a wall remains before reading the top.");
+          return base.at(-1);
+        case "pop": case "pop_back": {
+          if (!base.length) fail("Cannot pop an empty stack.");
+          const popped = args.length && python ? base.splice(indexOf(base,a),1)[0] : base.pop();
+          return program.language === "cpp" ? undefined : popped;
+        }
+        case "push": case "append": case "push_back": case "emplace_back": case "add":
           if (base.length >= 4096) fail("Collection size limit reached.");
           base.push(args.length === 1 ? a : args); return null;
         case "sort": sorted(base,a); return null;
@@ -200,6 +216,22 @@ function executePractice(program, nums, target) {
       case "array": return node.items.map(item => evaluate(item,env));
       case "map": return new Map(node.entries.map(([k,v]) => [evaluate(k,env),evaluate(v,env)]));
       case "index": return readAt(evaluate(node.base,env),evaluate(node.key,env));
+      case "slice": {
+        const values = array(evaluate(node.base,env));
+        const step = node.step ? integer(evaluate(node.step,env)) : 1;
+        if (!step) fail("A slice step must be nonzero.");
+        const low = step > 0 ? 0 : -1, high = step > 0 ? values.length : values.length - 1;
+        const bound = (expr, fallback) => {
+          if (!expr) return fallback;
+          const n = integer(evaluate(expr,env));
+          return Math.max(low, Math.min(high, n < 0 ? values.length + n : n));
+        };
+        const start = bound(node.start, step > 0 ? low : high);
+        const end = bound(node.end, step > 0 ? high : low);
+        const result = [];
+        for (let i = start; step > 0 ? i < end : i > end; i += step) { tick(); result.push(values[i]); }
+        return result;
+      }
       case "lambda": return {kind:"keyFunction",param:node.param,value:node.value,env};
       case "member": {
         const base = evaluate(node.base,env);
@@ -253,6 +285,11 @@ function executePractice(program, nums, target) {
     tick();
     switch (node.kind) {
       case "declare": for (const e of node.entries) env.vars.set(e.id,evaluate(e.value,env)); break;
+      case "chain": {
+        const value = evaluate(node.value,env);
+        for (const target of node.targets) write(target,value,env);
+        break;
+      }
       case "assign": {
         const items = node.right.map(r => evaluate(r,env));
         if (node.left.length === 1) write(node.left[0],items.length > 1 ? items : items[0],env);
@@ -300,7 +337,8 @@ function executePractice(program, nums, target) {
     }
   }
   const env = new Scope();
-  bind(program.params, [[...nums],target], env);
+  env.vars.set(program.params[0], [...nums]);
+  if (program.params.length === 2) env.vars.set(program.params[1], target);
   const signal = runBlock(program.body,env);
   if (signal && signal.kind !== "return") fail(`Use '${signal.kind}' inside a loop.`);
   return signal?.value;

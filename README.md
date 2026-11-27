@@ -14,11 +14,11 @@ Play or pause the trace, move one step at a time, or scrub the timeline. With fo
 
 Two Sum accepts 2–12 integers with exactly one matching pair. Sorting retains original indices, and duplicate values occupy distinct tiles.
 
-In Two Sum, open **Solution Code** and choose **Practice Code** to write your own solution. Click **Hint** for a first step, feedback on your progress, or a correction with the relevant line and the reason to change it. Hints use local pattern checks for the four walkthrough approaches. Each approach and language has its own draft, saved in this browser when local storage is available. Switch back to **Solution Code** to see the highlighted walkthrough again.
+In either problem, open **Solution Code** and choose **Practice Code** to write your own solution. Click **Hint** for a first step, feedback on your progress, or a correction with the relevant line and the reason to change it. Hints use local pattern checks for the selected problem. Each problem, approach, and language has its own draft, saved in this browser when local storage is available. Switch back to **Solution Code** to see the highlighted walkthrough again.
 
-Click **Run** to execute the current draft against **Classic pair**, **Later match**, **Duplicate values**, and **Negative values**. Apply a different input in **Edit input** to include it as a fifth case. Expand a result to see the array, target, returned indices, and expected pair. Either index order passes. Failed cases open automatically.
+Click **Run** to test the current draft on all four examples from **Edit input**. Two Sum checks the returned pair of indices in either order. Trapping Rain Water checks the returned whole-number volume on **Wide basin** (9), **Several pools** (6), **Level walls** (4), and **Rising ground** (0). Apply a different custom input to include it as a fifth case. Expand a result to compare the input, returned answer, and expected answer. Failed cases open automatically.
 
-The offline runner interprets the integer, array, map, loop, conditional, and sorting operations used in the four language views. Java and C++ drafts can use the starter method or a LeetCode-style solution class. Python also accepts a function body, and pseudocode follows the indentation and notation in the walkthroughs. Other language features and libraries can fall outside this subset. An execution limit stops runaway loops.
+The offline runner interprets the integer, array, map, stack, loop, conditional, and sorting operations used in the four language views. Java and C++ drafts can use the starter method or a LeetCode-style solution class. Python also accepts a function body, and pseudocode follows the indentation and notation in the walkthroughs. Other language features and libraries can fall outside this subset. An execution limit stops runaway loops.
 
 Run `node --test` from the repository root to check practice hints and example execution.
 

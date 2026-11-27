@@ -4,13 +4,13 @@ const {readFileSync} = require("node:fs");
 const {join} = require("node:path");
 const vm = require("node:vm");
 
-const scripts = ["solutions.js", "listings.js", "practice-parser.js", "practice-runtime.js", "two-sum-runner.js"];
-const {codeListings, twoSumExamples, practiceCases, judgeTwoSum} = vm.runInNewContext(
+const scripts = ["solutions.js", "listings.js", "practice-parser.js", "practice-runtime.js", "practice-runner.js"];
+const {codeListings, twoSumExamples, practiceCases, judgePractice} = vm.runInNewContext(
   scripts.map(file => readFileSync(join(__dirname, "..", file), "utf8")).join("\n") +
-  "\n;({codeListings,twoSumExamples,practiceCases,judgeTwoSum})"
+  "\n;({codeListings,twoSumExamples,practiceCases,judgePractice})"
 );
 const cases = practiceCases(twoSumExamples, twoSumExamples.classic);
-const judge = (source, language = "python", inputs = cases) => judgeTwoSum(source, language, inputs);
+const judge = (source, language = "python", inputs = cases) => judgePractice(source, language, inputs);
 const allPass = report => {
   assert.equal(report.error, undefined);
   for (const row of report.results) assert.equal(row.status, "Passed", `${row.name}: ${row.error || row.actual}`);

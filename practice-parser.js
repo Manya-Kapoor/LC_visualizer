@@ -1,5 +1,8 @@
 // Parse the practice dialects into statements and expressions. Draft text is always data.
-function parsePractice(source, language) {
+function parsePractice(source, language, problem = "two-sum") {
+  const rain = problem === "trapping-rain-water";
+  const inputName = rain ? "height" : "nums";
+  const functionNames = rain ? ["trap"] : ["two_sum", "twoSum"];
   const indented = language === "python" || language === "pseudocode";
   const error = (line, message) => { throw new Error(`Line ${line}: ${message}`); };
   if (!source.trim()) throw new Error("Write a solution in the editor, then run the examples.");
@@ -13,7 +16,18 @@ function parsePractice(source, language) {
       .replace(/(\w+)\[([^\]]+)\] if present, otherwise NONE/ig, "$1.get($2)")
       .replace(/\b(\w+) contains (\w+)/ig, "$2 in $1").replace(/\.value\b/g, "[0]").replace(/\.index\b/g, "[1]");
     if (/^sort (\w+) by value(?:, then by original index)?$/i.test(s)) return s.replace(/^sort (\w+).*$/i, "$1.sort()");
-    s = s.replace(/^for each index (\w+) from left to right$/i, "for $1 in range(len(nums)):")
+    if (rain) {
+      s = s.replace(/\bfirst index\b/gi, "0").replace(/\blast index\b/gi, "(len(height) - 1)")
+        .replace(/×/g, "*").replace(/\bempty stack\b/gi, "[]")
+        .replace(/\b(\w+) has indices\b/gi, "$1").replace(/\b(\w+) is empty\b/gi, "not $1")
+        .replace(/\btop index on (\w+)\b/gi, "$1[-1]").replace(/\bpop the top index\b/gi, "stack.pop()")
+        .replace(/\[top\]/gi, "[stack[-1]]").replace(/^push (\w+) onto (\w+)$/i, "$2.append($1)")
+        .replace(/^move (\w+) one place (left|right)$/i, (_, id, dir) => id + (dir.toLowerCase() === "left" ? " -= 1" : " += 1"))
+        .replace(/^create arrays (\w+) and (\w+) of length (\w+)$/i, "$1, $2 = [0] * $3, [0] * $3")
+        .replace(/^for (\w+) from (.+?) down to (.+)$/i, "for $1 in range($2, ($3) - 1, -1):");
+      if (/^IF .+, BREAK$/i.test(s)) return s.replace(/^if (.+), break$/i, "if $1: break");
+    }
+    s = s.replace(/^for each index (\w+)(?: from left to right)?$/i, "for $1 in range(len(" + inputName + ")):")
       .replace(/^for (\w+) from (.+?) to (.+)$/i, "for $1 in range($2, ($3) + 1):")
       .replace(/\b(IF|ELSE|WHILE|RETURN|FOR|IN|AND|OR|NOT|BREAK|CONTINUE)\b/g, w => w.toLowerCase())
       .replace(/\bNONE\b/g, "None");
@@ -72,7 +86,9 @@ function parsePractice(source, language) {
     if (!/^[a-z_]\w*$/i.test(peek() || "")) error(line(), "Expected a variable name.");
     return take();
   };
-  const typed = new Set(["int", "long", "bool", "Integer", "auto", "size_t", "vector", "pair", "map", "unordered_map", "Map", "HashMap", "List", "ArrayList"]);
+  const typed = new Set(["int", "long", "bool", "Integer", "auto", "size_t", "vector", "pair", "map", "unordered_map", "Map", "HashMap", "List", "ArrayList", "Deque", "ArrayDeque", "Stack", "stack"]);
+  // A C++ variable may itself be named stack, as in vector<int> stack.
+  const typeAt = offset => typed.has(peek(offset)) && (peek(offset) !== "stack" || peek(offset + 1) === "<");
   function typeName() {
     eat("const");
     if (eat("std")) expect("::");
@@ -121,6 +137,7 @@ function parsePractice(source, language) {
       return {kind:"allocate", dims};
     }
     if (["(","[","{"].includes(token)) {
+      if (!indented && token === "[" && rain) error(at, "Return a whole-number water volume.");
       if (!indented && token === "[") error(at, language === "java" ? "Use new int[]{i, j} to return a Java array." : "Use {i, j} to return a C++ vector.");
       if (language === "java" && token === "{") error(at, "Use new int[]{i, j} for an array expression.");
       const end = {"(":")","[":"]","{":"}"}[token];
@@ -148,7 +165,7 @@ function parsePractice(source, language) {
     }
     if (token === "lambda") { const param = name(); expect(":"); return {kind:"lambda", param, value:expression()}; }
     if (!/^[a-z_]\w*$/i.test(token)) error(at, `Unexpected ${token} in an expression.`);
-    if (language === "cpp" && (typed.has(token) || (token === "std" && peek() === "::" && typed.has(peek(1))))) {
+    if (language === "cpp" && (typeAt(-1) || (token === "std" && peek() === "::" && typeAt(1)))) {
       pos--;
       const type = typeName();
       if (eat("{")) return {kind:"array", items:list("}")};
@@ -161,7 +178,17 @@ function parsePractice(source, language) {
   function expression(min = 0) {
     let node = atom();
     for (;;) {
-      if (eat("[")) { const key = expression(); expect("]"); node = {kind:"index", base:node, key}; }
+      if (eat("[")) {
+        const first = indented && peek() === ":" ? null : expression();
+        if (indented && eat(":")) {
+          const end = [":", "]"].includes(peek()) ? null : expression();
+          const step = eat(":") && peek() !== "]" ? expression() : null;
+          node = {kind:"slice", base:node, start:first, end, step};
+        } else {
+          node = {kind:"index", base:node, key:first};
+        }
+        expect("]");
+      }
       else if (eat(".") || eat("->")) node = {kind:"member", base:node, id:name()};
       else if (eat("(")) {
         const args = list(")", () => {
@@ -195,7 +222,7 @@ function parsePractice(source, language) {
     } while (eat(","));
     return {kind:"declare", entries};
   }
-  const isType = () => typed.has(peek()) || peek() === "const" || (peek() === "std" && typed.has(peek(2)));
+  const isType = () => typeAt(0) || peek() === "const" || (peek() === "std" && typeAt(2));
   function simple() {
     if (!indented && isType()) return declaration();
     if (["++","--"].includes(peek())) { const op = take(); return {kind:"change", left:expression(), op}; }
@@ -203,6 +230,12 @@ function parsePractice(source, language) {
     if (indented) while (eat(",")) left.push(expression());
     if (eat("=")) {
       const right = [expression()];
+      if (language === "python" && left.length === 1 && peek() === "=") {
+        const targets = [...left];
+        let value = right[0];
+        while (eat("=")) { targets.push(value); value = expression(); }
+        return {kind:"chain", targets, value};
+      }
       if (indented) while (eat(",")) {
         // Pseudocode can initialize two variables on one line: l = 0, r = n - 1.
         if (language === "pseudocode" && peek(1) === "=") { left.push(expression()); expect("="); }
@@ -278,7 +311,7 @@ function parsePractice(source, language) {
     return node;
   }
 
-  let params = ["nums","target"], body;
+  let params = rain ? ["height"] : ["nums", "target"], body;
   if (indented) {
     while (peek() === "from" || peek() === "import") {
       const at = line(), words = [];
@@ -290,7 +323,7 @@ function parsePractice(source, language) {
     if (wrapper) { name(); expect(":"); expect(";"); expect("<indent>"); }
     if (eat("def")) {
       const id = name();
-      if (!["two_sum","twoSum"].includes(id)) error(line(), "Name the solution two_sum or twoSum.");
+      if (!functionNames.includes(id)) error(line(), "Name the solution " + functionNames.join(" or ") + ".");
       expect("(");
       params = list(")", () => {
         const id = name();
@@ -309,14 +342,14 @@ function parsePractice(source, language) {
     eat("public"); eat("static");
     typeName();
     const id = name();
-    if (id !== "twoSum" && id !== "two_sum") error(line(), "Provide a twoSum function with the array and target parameters.");
+    if (!functionNames.includes(id)) error(line(), "Provide a " + (rain ? "trap function with a height array." : "twoSum function with the array and target parameters."));
     expect("(");
     params = list(")", () => { typeName(); const id = name(); if (eat("[")) expect("]"); return id; });
     expect("{"); body = block("}");
     if (wrapper) { expect("}"); eat(";"); }
   }
   if (peek() !== "<end>") error(line(), "The practice runner expects a single solution function.");
-  if (params.length !== 2) error(1, "Use two parameters for the input array and target.");
-  if (!body.length) throw new Error("Add a solution body that returns the two indices, then run again.");
+  if (params.length !== (rain ? 1 : 2)) error(1, rain ? "Use one parameter for the height array." : "Use two parameters for the input array and target.");
+  if (!body.length) throw new Error("Add a solution body that returns " + (rain ? "the trapped water volume." : "the two indices."));
   return {params, body, language};
 }

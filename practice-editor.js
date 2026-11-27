@@ -1,10 +1,17 @@
-function createTwoSumPractice() {
+function createPracticeEditor() {
+  const problemName = $("problem-title").textContent;
+  const getHint = isRain ? rainHint : twoSumHint;
   const mode = $("code-mode");
   const editor = $("practice-editor");
   const clearRun = createPracticeRunControls(editor);
   const feedback = $("hint-feedback");
   const drafts = new Map();
-  const starters = {
+  const starters = isRain ? {
+    java: "public int trap(int[] height) {\n    \n}",
+    cpp: "int trap(vector<int>& height) {\n    \n}",
+    python: "def trap(height):\n    ",
+    pseudocode: ""
+  } : {
     java: "public int[] twoSum(int[] nums, int target) {\n    \n}",
     cpp: "vector<int> twoSum(vector<int>& nums, int target) {\n    \n}",
     python: "def two_sum(nums, target):\n    ",
@@ -20,8 +27,8 @@ function createTwoSumPractice() {
     feedback.hidden = true;
     if (mode.value !== "practice") return;
     const language = $("language").value;
-    const key = `code-astra:two-sum:draft:${approach}:${language}`;
-    $("practice-label").textContent = `${solutions[approach].name} draft`;
+    const key = `code-astra:${problemSlug}:draft:${approach}:${language}`;
+    $("practice-label").textContent = `${approaches[approach].name} draft`;
     if (key === draftKey) return;
     draftKey = key;
     let text = drafts.get(key);
@@ -32,7 +39,7 @@ function createTwoSumPractice() {
       $("draft-status").textContent = "Draft available in this tab for this session.";
     }
     editor.value = text ?? starters[language];
-    editor.placeholder = language === "pseudocode" ? "Write your Two Sum steps here…" : "Write your Two Sum solution here…";
+    editor.placeholder = `Write your ${problemName} ${language === "pseudocode" ? "steps" : "solution"} here…`;
     const caret = text == null && language !== "pseudocode" ? editor.value.indexOf("\n    ") + 5 : editor.value.length;
     editor.setSelectionRange(caret, caret);
   }
@@ -77,7 +84,7 @@ function createTwoSumPractice() {
     }
   });
   $("practice-hint").addEventListener("click", () => {
-    const hint = twoSumHint(editor.value, approach, $("language").value, input);
+    const hint = getHint(editor.value, approach, $("language").value, input);
     $("hint-title").textContent = hint.title;
     const excerpt = $("hint-line");
     excerpt.hidden = hint.line == null;
