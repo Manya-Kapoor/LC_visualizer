@@ -16,7 +16,11 @@ Two Sum accepts 2–12 integers with exactly one matching pair. Sorting retains 
 
 In Two Sum, open **Solution Code** and choose **Practice Code** to write your own solution. Click **Hint** for a first step, feedback on your progress, or a correction with the relevant line and the reason to change it. Hints use local pattern checks for the four walkthrough approaches. Each approach and language has its own draft, saved in this browser when local storage is available. Switch back to **Solution Code** to see the highlighted walkthrough again.
 
-To check the practice hints during development, run `node --test tests/two-sum-practice.test.cjs`.
+Click **Run** to execute the current draft against **Classic pair**, **Later match**, **Duplicate values**, and **Negative values**. Apply a different input in **Edit input** to include it as a fifth case. Expand a result to see the array, target, returned indices, and expected pair. Either index order passes. Failed cases open automatically.
+
+The offline runner interprets the integer, array, map, loop, conditional, and sorting operations used in the four language views. Java and C++ drafts can use the starter method or a LeetCode-style solution class. Python also accepts a function body, and pseudocode follows the indentation and notation in the walkthroughs. Other language features and libraries can fall outside this subset. An execution limit stops runaway loops.
+
+Run `node --test` from the repository root to check practice hints and example execution.
 
 Trapping Rain Water accepts 1–16 whole-number heights from 0 to 100,000. Compare two pointers, prefix/suffix maxima, a monotonic stack, and brute force. The chart shows terrain heights, water depth per column, and total volume at each step. The **Wide basin** example traps 9 units and **Several pools** traps 6.
 

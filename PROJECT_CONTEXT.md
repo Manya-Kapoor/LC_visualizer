@@ -4,7 +4,7 @@
 
 Code Astra teaches LeetCode solutions through interactive walkthroughs. The user has approved **Two Sum** and **Trapping Rain Water**. Open `index.html` and use the problem selector, or follow the local server instructions in [README.md](README.md).
 
-The user approved the Two Sum practice editor. Open the code panel’s **Solution Code** dropdown and choose **Practice Code**. Rainwater has a direct route at `index.html?problem=trapping-rain-water` and opens on two pointers with the six-bar example that holds nine units.
+The user approved the **Run** button in Two Sum practice. Open **Practice Code**, enter a solution, and click **Run**. Rainwater has a direct route at `index.html?problem=trapping-rain-water` and opens on two pointers with the six-bar example that holds nine units.
 
 ## Decisions from project chats
 
@@ -22,7 +22,8 @@ The user approved the Two Sum practice editor. Open the code panel’s **Solutio
 | Language and complexity update · `e3b529e` | Added Java and C++ alongside Python, with a reason for each time and space bound. |
 | Code Astra and pseudocode · `ef5faaf` | Added four pseudocode listings, updated the branding and theme storage, and linked the editable checklist and this handoff from the README. |
 | Trapping Rain Water · `d78a328` | Added a terrain chart, recorded water depths and totals, four approaches, and 16 synchronized listings. The problem selector connects both walkthroughs. |
-| Two Sum practice | Added an editor with a separate draft for every approach and language. Clicking **Hint** gives a first step, suggests the next step, or explains a recognized mistake on its original line. |
+| Two Sum practice · `c00ddba` | Added an editor with a separate draft for every approach and language. Clicking **Hint** gives a first step, suggests the next step, or explains a recognized mistake on its original line. |
+| Two Sum practice runs | Each run tests the current draft against every named Edit input example and a distinct active custom input. Results accept either index order and show case-specific output or errors. |
 
 ## Implementation notes
 
@@ -32,10 +33,14 @@ The user approved the Two Sum practice editor. Open the code panel’s **Solutio
 
 The Two Sum editor and browser storage live in `two-sum-practice.js`. Hints in `two-sum-hints.js` inspect the current text locally against common Two Sum patterns. Drafts stay in the current tab when browser storage is unavailable. Opening the editor pauses playback at the current step.
 
+Edit input and Run share the example names and arrays in `solutions.js`. `practice-parser.js` parses the walkthrough language subset and `practice-runtime.js` executes it in a bounded browser worker. `two-sum-runner.js` grades against the original input and clears obsolete reports when the editor or input changes. The runner works from a local file without a server or compiler installation.
+
 ## Verification and next steps
 
 All four rainwater approaches matched independently calculated per-column depths on 5,467 terrains, including both official examples, flat slopes, equal walls, and maximum-height inputs. Browser checks covered all 16 listings, problem switching, playback, invalid input, and phone layout. The Java and Python listings were also executed on seven test cases. C++ verification covered its displayed code and action mappings.
 
 The 42 practice regression tests cover all 16 reference listings and their partial drafts, common errors, renamed variables, and alternative implementations. Run `node --test tests/two-sum-practice.test.cjs` after changing hints. Browser checks covered all three hint states, draft recovery after reload, switching approaches and languages, returning to the reference listing, both themes, phone layout, and the rainwater route.
+
+Run `node --test` for both practice suites. All 68 tests passed, including execution of all 16 reference listings against each of the four named examples. Regression cases also exercise alternate implementations, reversed indices, input mutation, errors and runaway loops. In Chrome, the local file showed 4/4 for a valid Java draft, 2/4 for a fixed answer, and 5/5 with a custom input. Editing the draft or applying a different input cleared the old results.
 
 The user will choose the next milestone. The [idea checklist](IDEAS.md) tracks future browsing and tagging features.

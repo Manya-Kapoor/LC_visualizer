@@ -1,6 +1,7 @@
 function createTwoSumPractice() {
   const mode = $("code-mode");
   const editor = $("practice-editor");
+  const clearRun = createPracticeRunControls(editor);
   const feedback = $("hint-feedback");
   const drafts = new Map();
   const starters = {
@@ -15,6 +16,7 @@ function createTwoSumPractice() {
   mode.value = "solution";
 
   function refresh() {
+    clearRun();
     feedback.hidden = true;
     if (mode.value !== "practice") return;
     const language = $("language").value;
@@ -36,6 +38,7 @@ function createTwoSumPractice() {
   }
 
   function saveDraft() {
+    clearRun();
     drafts.set(draftKey, editor.value);
     feedback.hidden = true;
     try {
@@ -69,6 +72,7 @@ function createTwoSumPractice() {
       refresh();
       editor.focus({preventScroll: true});
     } else {
+      clearRun();
       renderFrame();
     }
   });

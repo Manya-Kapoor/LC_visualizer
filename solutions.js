@@ -1,3 +1,10 @@
+const twoSumExamples = {
+  classic: {name: "Classic pair", nums: [2, 7, 11, 15], target: 9},
+  later: {name: "Later match", nums: [3, 2, 4], target: 6},
+  duplicates: {name: "Duplicate values", nums: [3, 3], target: 6},
+  negatives: {name: "Negative values", nums: [-4, 8, -1, 6, 5], target: 2}
+};
+
 const solutions = {
   onePass: {
     name: "Hash map", icon: "grid", time: "O(n)", space: "O(n)",

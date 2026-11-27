@@ -55,18 +55,13 @@ $("theme").onclick = () => {
   try { localStorage.setItem(themeKey, theme); } catch { /* The toggle also works without storage. */ }
 };
 
-const twoSumExamples = {
-  classic: {nums: [2, 7, 11, 15], target: 9},
-  later: {nums: [3, 2, 4], target: 6},
-  duplicates: {nums: [3, 3], target: 6},
-  negatives: {nums: [-4, 8, -1, 6, 5], target: 2}
-};
 const isRain = new URLSearchParams(location.search).get("problem") === "trapping-rain-water";
 const examples = isRain ? rainExamples : twoSumExamples;
 const approaches = isRain ? rainSolutions : solutions;
 const listings = isRain ? rainListings : codeListings;
 const problemSlug = isRain ? "trapping-rain-water" : "two-sum";
 if (isRain) setupRainPage();
+else for (const [key, example] of Object.entries(twoSumExamples)) $("preset").add(new Option(example.name, key));
 $("problem-select").value = problemSlug;
 $("problem-select").onchange = event => {
   const url = new URL(location.href);

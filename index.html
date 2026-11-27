@@ -7,15 +7,18 @@
   <meta name="color-scheme" content="light dark">
   <title>Two Sum · Code Astra</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230e7767'/%3E%3Cpath d='m6 14 10-6 10 6-10 6zm0 5 10 6 10-6' fill='none' stroke='white' stroke-width='2.5' stroke-linejoin='round'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="styles.css?v=practice-2">
-  <script src="solutions.js" defer></script>
+  <link rel="stylesheet" href="styles.css?v=run">
+  <script src="solutions.js?v=run" defer></script>
   <script src="listings.js" defer></script>
   <script src="rainwater.js" defer></script>
   <script src="rainwater-listings.js" defer></script>
   <script src="rainwater-view.js" defer></script>
   <script src="two-sum-hints.js?v=1" defer></script>
-  <script src="two-sum-practice.js?v=1" defer></script>
-  <script src="app.js?v=practice" defer></script>
+  <script src="practice-parser.js" defer></script>
+  <script src="practice-runtime.js" defer></script>
+  <script src="two-sum-runner.js" defer></script>
+  <script src="two-sum-practice.js?v=run" defer></script>
+  <script src="app.js?v=run" defer></script>
 </head>
 <body>
   <header class="topbar">
@@ -86,7 +89,10 @@
         <div id="practice-panel" hidden>
           <div class="practice-toolbar">
             <label for="practice-editor" id="practice-label">Your draft</label>
-            <button class="secondary-btn hint-button" type="button" id="practice-hint"><span data-icon="bulb"></span>Hint</button>
+            <div class="practice-actions">
+              <button class="secondary-btn hint-button" type="button" id="practice-hint"><span data-icon="bulb"></span>Hint</button>
+              <button class="play-btn" type="button" id="practice-run" aria-controls="run-results" title="Run all examples and the active custom input"><span data-icon="play"></span><span id="run-label">Run</span></button>
+            </div>
           </div>
           <div role="status" aria-live="polite" aria-atomic="true">
             <div id="hint-feedback" hidden>
@@ -97,6 +103,13 @@
           </div>
           <textarea id="practice-editor" wrap="off" spellcheck="false" autocomplete="off" autocapitalize="off" aria-describedby="draft-status"></textarea>
           <p id="draft-status"></p>
+          <p class="sr-only" id="run-status" role="status" aria-atomic="true"></p>
+          <section id="run-results" aria-labelledby="run-summary" hidden>
+            <h3 id="run-summary"></h3>
+            <p id="run-message" hidden></p>
+            <ul id="run-cases"></ul>
+            <p class="runner-note">Runs locally using the language features in the Two Sum walkthroughs.</p>
+          </section>
         </div>
         <div class="complexities">
           <div><h3><span data-icon="clock"></span>Time <strong id="time-cost"></strong></h3><p id="time-reason"></p></div>
@@ -111,7 +124,7 @@
     <form id="input-form">
       <div class="dialog-head"><h2 id="input-title">Edit input</h2><button class="icon-btn" type="button" id="close-dialog" aria-label="Close input editor"><span data-icon="close"></span></button></div>
       <p class="dialog-intro">Try an example or trace your own array with exactly one matching pair.</p>
-      <label class="field-label" for="preset">Example</label><select class="text-field" id="preset"><option value="custom">Custom input</option><option value="classic">Classic pair</option><option value="later">Later match</option><option value="duplicates">Duplicate values</option><option value="negatives">Negative values</option></select>
+      <label class="field-label" for="preset">Example</label><select class="text-field" id="preset"><option value="custom">Custom input</option></select>
       <label class="field-label" for="nums-input">Array</label><input class="text-field mono" id="nums-input" required aria-describedby="array-help input-error" autocomplete="off" spellcheck="false"><p class="input-hint" id="array-help">Enter 2–12 integers, separated by commas.</p>
       <div id="target-field"><label class="field-label" for="target-input">Target</label><input class="text-field mono" id="target-input" required aria-describedby="input-error" autocomplete="off"></div>
       <p id="input-error" role="alert" hidden></p>
