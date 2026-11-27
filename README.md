@@ -1,6 +1,6 @@
 # Code Astra
 
-An interactive walkthrough of LeetCode 1, Two Sum. Open `index.html` in a modern browser. All assets are local and there is no install or build step.
+Interactive walkthroughs for [1. Two Sum](https://leetcode.com/problems/two-sum/description/) and [42. Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/description/). Open `index.html` in a modern browser and select a question from **Problem**. The rainwater walkthrough also opens directly at `index.html?problem=trapping-rain-water`. All assets are local and there is no install or build step.
 
 To serve the page over HTTP with Python, run the following command from the repository root and open <http://localhost:8000>.
 
@@ -12,8 +12,10 @@ Choose an approach to follow its code, array state, and step explanation togethe
 
 Play or pause the trace, move one step at a time, or scrub the timeline. With focus outside a control, Space toggles playback and the left and right arrow keys move between steps.
 
-The input editor includes four examples and accepts 2–12 integers with exactly one matching pair. The shorter input limit keeps the visualization readable. Sorting retains original indices, and duplicate values occupy distinct tiles.
+Two Sum accepts 2–12 integers with exactly one matching pair. Sorting retains original indices, and duplicate values occupy distinct tiles.
 
-The trace generators and complexity explanations are in `solutions.js`. The code examples in `listings.js` mark the source line for each trace action in each language. Browser interactions and the header illustration are in `app.js`. Layout and theme tokens are in `styles.css`.
+Trapping Rain Water accepts 1–16 whole-number heights from 0 to 100,000. Compare two pointers, prefix/suffix maxima, a monotonic stack, and brute force. The chart shows terrain heights, water depth per column, and total volume at each step. The **Wide basin** example traps 9 units and **Several pools** traps 6.
+
+Two Sum traces and listings live in `solutions.js` and `listings.js`. The corresponding rainwater files are `rainwater.js` and `rainwater-listings.js`. Both problems use the same action markers, code panel, and playback controls. The terrain chart and input validation are in `rainwater-view.js`. Layout and theme tokens are in `styles.css`.
 
 To continue the project in a new chat, start with the [project context](PROJECT_CONTEXT.md). The [idea checklist](IDEAS.md) tracks suggestions for future work.

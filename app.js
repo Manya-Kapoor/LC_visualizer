@@ -55,14 +55,28 @@ $("theme").onclick = () => {
   try { localStorage.setItem(themeKey, theme); } catch { /* The toggle also works without storage. */ }
 };
 
-const examples = {
+const twoSumExamples = {
   classic: {nums: [2, 7, 11, 15], target: 9},
   later: {nums: [3, 2, 4], target: 6},
   duplicates: {nums: [3, 3], target: 6},
   negatives: {nums: [-4, 8, -1, 6, 5], target: 2}
 };
-let input = examples.classic;
-let approach = "onePass";
+const isRain = new URLSearchParams(location.search).get("problem") === "trapping-rain-water";
+const examples = isRain ? rainExamples : twoSumExamples;
+const approaches = isRain ? rainSolutions : solutions;
+const listings = isRain ? rainListings : codeListings;
+const problemSlug = isRain ? "trapping-rain-water" : "two-sum";
+if (isRain) setupRainPage();
+$("problem-select").value = problemSlug;
+$("problem-select").onchange = event => {
+  const url = new URL(location.href);
+  if (event.target.value === "two-sum") url.searchParams.delete("problem");
+  else url.searchParams.set("problem", event.target.value);
+  location.assign(url.href);
+};
+window.addEventListener("pageshow", () => { $("problem-select").value = problemSlug; });
+let input = isRain ? examples.basin : examples.classic;
+let approach = isRain ? "pointers" : "onePass";
 let frames = [];
 let position = 0;
 let timer = null;
@@ -71,9 +85,9 @@ let timer = null;
 function highlightCode(line) {
   const tokens = line.match(/[A-Za-z_]\w*|\d+|./g) || [];
   return tokens.map(token => {
-    const style = /^(def|for|in|if|return|while|else|and|is|not|None|public|int|new|auto|FOR|FROM|TO|IF|RETURN|WHILE|ELSE|AND|NONE|SORT)$/.test(token) ? "keyword"
-      : /^(enumerate|len|range|sorted|get|Map|Integer|HashMap|Arrays|Comparator|vector|pair|unordered_map|sort)$/.test(token) ? "builtin"
-      : /^(two_sum|twoSum)$/.test(token) ? "fn" : /^\d+$/.test(token) ? "number" : "";
+    const style = /^(def|for|in|if|return|while|else|and|is|not|None|public|int|new|auto|break|FOR|FROM|TO|IF|RETURN|WHILE|ELSE|AND|NONE|SORT|DOWN|BREAK)$/.test(token) ? "keyword"
+      : /^(enumerate|len|range|sorted|get|Map|Integer|HashMap|Arrays|Comparator|vector|pair|unordered_map|sort|Deque|ArrayDeque|Math|max|min)$/.test(token) ? "builtin"
+      : /^(two_sum|twoSum|trap)$/.test(token) ? "fn" : /^\d+$/.test(token) ? "number" : "";
     const safe = token === "<" ? "&lt;" : token === ">" ? "&gt;" : token === "&" ? "&amp;" : token;
     return style ? `<span class="token-${style}">${safe}</span>` : safe;
   }).join("");
@@ -82,13 +96,13 @@ function renderCode() {
   const language = $("language");
   const source = $("source-code");
   source.setAttribute("aria-label", language.selectedOptions[0].text + " solution with current line highlighted");
-  source.innerHTML = `<div class="code-list">${codeListings[approach][language.value].lines.map((line, i) =>
+  source.innerHTML = `<div class="code-list">${listings[approach][language.value].lines.map((line, i) =>
     `<div class="code-line"><span class="line-num" aria-hidden="true">${i + 1}</span><code>${highlightCode(line)}</code></div>`).join("")}</div>`;
   source.scrollTop = 0;
 }
 function renderApproach() {
   stop();
-  const solution = solutions[approach];
+  const solution = approaches[approach];
   frames = solution.trace(input.nums, input.target);
   position = 0;
   renderCode();
@@ -98,11 +112,10 @@ function renderApproach() {
   $("space-reason").textContent = solution.spaceReason;
   $("approach-description").textContent = solution.description;
   $("approaches").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.id === approach)));
-  $("target-chip").innerHTML = `target = <b>${input.target}</b>`;
   renderFrame();
 }
-function renderFrame() {
-  const step = frames[position];
+function renderTwoSumFrame(step) {
+  $("target-chip").innerHTML = `target = <b>${input.target}</b>`;
   const order = step.order || input.nums.map((_, i) => i);
   const pointerByIndex = new Map(step.pointers);
   $("array-label").textContent = step.order ? "SORTED ARRAY · ORIGINAL INDICES" : "INPUT ARRAY";
@@ -126,8 +139,13 @@ function renderFrame() {
       : '<span class="memory-empty">Awaiting pointers</span>';
     if (step.total !== undefined) $("memory-contents").insertAdjacentHTML("beforeend", `<span class="memory-entry hot">sum = ${step.total}</span>`);
   }
+}
+function renderFrame() {
+  const step = frames[position];
+  if (isRain) renderRainFrame(step, input.nums);
+  else renderTwoSumFrame(step);
   const source = $("source-code");
-  const listing = codeListings[approach][$("language").value];
+  const listing = listings[approach][$("language").value];
   const line = listing.lineFor[step.action];
   const previousLine = source.querySelector(".current");
   previousLine?.classList.remove("current");
@@ -144,7 +162,7 @@ function renderFrame() {
   $("mobile-line-number").textContent = "Line " + line;
   $("mobile-code").textContent = listing.lines[line - 1].trim();
   $("step-description").textContent = step.detail;
-  $("note-icon").innerHTML = icon(step.result ? "check" : "scan");
+  $("note-icon").innerHTML = icon(step.result !== undefined ? "check" : "scan");
   $("step-counter").textContent = `Step ${position + 1} / ${frames.length}`;
   const timeline = $("timeline");
   timeline.max = frames.length;
@@ -182,7 +200,7 @@ function seek(index) {
   position = Math.max(0, Math.min(frames.length - 1, index));
   renderFrame();
 }
-for (const [id, solution] of Object.entries(solutions)) {
+for (const [id, solution] of Object.entries(approaches)) {
   const button = document.createElement("button");
   button.type = "button";
   button.dataset.id = id;
@@ -214,7 +232,7 @@ document.addEventListener("keydown", event => {
 
 function fillEditor(value) {
   $("nums-input").value = value.nums.join(", ");
-  $("target-input").value = value.target;
+  $("target-input").value = value.target ?? "";
   $("input-error").hidden = true;
 }
 $("edit-input").onclick = () => {
@@ -247,7 +265,7 @@ function readInput(raw, rawTarget) {
 $("input-form").onsubmit = event => {
   event.preventDefault();
   try {
-    input = readInput($("nums-input").value, $("target-input").value);
+    input = isRain ? readRainInput($("nums-input").value) : readInput($("nums-input").value, $("target-input").value);
   } catch (error) {
     $("input-error").textContent = error.message;
     $("input-error").hidden = false;
@@ -292,6 +310,10 @@ function drawHero() {
   for (let k = -16; k < 17; k++) {
     line([[-150, 40 * k], [660, 40 * k - 255]], "#b0e7bc0e");
     line([[-150, 40 * k], [660, 40 * k + 403]], "#b0e7bc0b");
+  }
+  if (isRain) {
+    drawRainHero(ctx, face, line);
+    return;
   }
   const points = [[44, 102], [131, 75], [218, 48], [305, 21]];
   const palettes = [

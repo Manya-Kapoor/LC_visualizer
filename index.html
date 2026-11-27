@@ -7,16 +7,22 @@
   <meta name="color-scheme" content="light dark">
   <title>Two Sum · Code Astra</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230e7767'/%3E%3Cpath d='m6 14 10-6 10 6-10 6zm0 5 10 6 10-6' fill='none' stroke='white' stroke-width='2.5' stroke-linejoin='round'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=rainwater">
   <script src="solutions.js" defer></script>
   <script src="listings.js" defer></script>
-  <script src="app.js" defer></script>
+  <script src="rainwater.js" defer></script>
+  <script src="rainwater-listings.js" defer></script>
+  <script src="rainwater-view.js" defer></script>
+  <script src="app.js?v=2" defer></script>
 </head>
 <body>
   <header class="topbar">
     <div class="topbar-inner">
       <a class="brand" href="index.html" aria-label="Code Astra home"><span class="brand-mark" data-icon="brand"></span>Code Astra</a>
-      <span class="brand-divider"></span><span class="workspace-name">Algorithm workspace</span>
+      <span class="brand-divider"></span>
+      <div class="problem-picker"><label for="problem-select">Problem</label>
+        <span class="language-picker"><select id="problem-select" class="language"><option value="two-sum">001 · Two Sum</option><option value="trapping-rain-water">042 · Trapping Rain Water</option></select><span data-icon="chevron"></span></span>
+      </div>
       <div class="header-actions">
         <a class="source-link" href="https://leetcode.com/problems/two-sum/description/" target="_blank" rel="noopener noreferrer">View on LeetCode <span data-icon="external"></span></a>
         <button type="button" class="theme-toggle icon-btn" id="theme" aria-label="Switch to dark theme" title="Switch to dark theme"><span data-icon="moon"></span></button>
@@ -85,7 +91,7 @@
       <p class="dialog-intro">Try an example or trace your own array with exactly one matching pair.</p>
       <label class="field-label" for="preset">Example</label><select class="text-field" id="preset"><option value="custom">Custom input</option><option value="classic">Classic pair</option><option value="later">Later match</option><option value="duplicates">Duplicate values</option><option value="negatives">Negative values</option></select>
       <label class="field-label" for="nums-input">Array</label><input class="text-field mono" id="nums-input" required aria-describedby="array-help input-error" autocomplete="off" spellcheck="false"><p class="input-hint" id="array-help">Enter 2–12 integers, separated by commas.</p>
-      <label class="field-label" for="target-input">Target</label><input class="text-field mono" id="target-input" required aria-describedby="input-error" autocomplete="off">
+      <div id="target-field"><label class="field-label" for="target-input">Target</label><input class="text-field mono" id="target-input" required aria-describedby="input-error" autocomplete="off"></div>
       <p id="input-error" role="alert" hidden></p>
       <div class="dialog-actions"><button class="secondary-btn" type="button" id="cancel-input">Cancel</button><button class="play-btn" type="submit">Apply input</button></div>
     </form>
